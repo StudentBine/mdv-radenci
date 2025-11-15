@@ -2,11 +2,8 @@ services:
   # PostgreSQL Database
   - type: pserv
     name: mdv-radenci-db
-    env: docker
     plan: free
     region: frankfurt
-    databaseName: mdv_radenci
-    databaseUser: mdv_user
 
   # Next.js Web Service
   - type: web
