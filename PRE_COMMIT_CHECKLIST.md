@@ -44,9 +44,10 @@ git status
 # 2. Preveri da .env NI v staging
 git ls-files | grep -E "\.env$|\.env\."
 
-# 3. Preveri za občutljive podatke
-grep -r "password.*=" . --exclude-dir=node_modules --exclude-dir=.git --exclude="*.md"
-grep -r "secret.*=" . --exclude-dir=node_modules --exclude-dir=.git --exclude="*.md"
+# 3. Preveri za občutljive podatke (excluda build direktorije in .env)
+grep -r "password.*=" . --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude-dir=.next --exclude=".env*" --exclude="*.md"
+grep -r "secret.*=" . --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude-dir=.next --exclude=".env*" --exclude="*.md"
+grep -r "SUPABASE_SERVICE_ROLE_KEY.*eyJ" . --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude-dir=.next --exclude=".env*" --exclude="*.example" --exclude="*.md"
 
 # 4. Build test
 npm run build

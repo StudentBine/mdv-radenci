@@ -16,15 +16,32 @@ jobs:
     - name: Check for secrets
       run: |
         echo "Checking for accidentally committed secrets..."
-        if grep -r "SUPABASE_SERVICE_ROLE_KEY.*eyJ" . --exclude-dir=node_modules --exclude-dir=.git --exclude="*.example"; then
-          echo "⚠️ WARNING: Found potential service role key!"
+        # Exclude workflow files, node_modules, .git, .next, build files, and env files
+        if grep -r "SUPABASE_SERVICE_ROLE_KEY.*eyJ" . \
+          --exclude-dir=node_modules \
+          --exclude-dir=.git \
+          --exclude-dir=.github \
+          --exclude-dir=.next \
+          --exclude=".env*" \
+          --exclude="*.example" \
+          --exclude="*.md" 2>/dev/null; then
+          echo "⚠️ WARNING: Found potential service role key in source files!"
+          echo "This key should only exist in .env files (which should NOT be committed)"
           exit 1
         fi
-        if grep -r "DATABASE_URL.*postgresql://.*:.*@" . --exclude-dir=node_modules --exclude-dir=.git --exclude="*.example" --exclude="*.md"; then
-          echo "⚠️ WARNING: Found potential database credentials!"
+        if grep -r "DATABASE_URL.*postgresql://.*:.*@" . \
+          --exclude-dir=node_modules \
+          --exclude-dir=.git \
+          --exclude-dir=.github \
+          --exclude-dir=.next \
+          --exclude=".env*" \
+          --exclude="*.example" \
+          --exclude="*.md" 2>/dev/null; then
+          echo "⚠️ WARNING: Found potential database credentials in source files!"
+          echo "Database URLs should only exist in .env files (which should NOT be committed)"
           exit 1
         fi
-        echo "✅ No obvious secrets found"
+        echo "✅ No obvious secrets found in source code"
     
     - name: Check .env is not committed
       run: |
