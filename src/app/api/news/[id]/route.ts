@@ -4,7 +4,7 @@ import { news } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { slugify } from '@/lib/utils';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 // GET - Pridobi posamezno novico
 export async function GET(
