@@ -1,0 +1,38 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: mdv-radenci-db
+    env: docker
+    plan: free
+    region: frankfurt
+    databases:
+      - name: mdv_radenci
+        user: mdv_user
+
+  # Next.js Web Service
+  - type: web
+    name: mdv-radenci
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mdv-radenci-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false

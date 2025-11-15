@@ -165,17 +165,29 @@ POST   /api/upload        - Naloži sliko
 
 ## 🚀 Production Deploy
 
-### Vercel (Priporočeno)
+### Render.com (Priporočeno - BREZPLAČNO)
 
-1. Povežite GitHub repo z Vercel
-2. Nastavite okoljske spremenljivke
-3. Deploy bo avtomatski
+Za podrobna navodila glejte **[RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md)**
 
-### Alternative
+**Hitri koraki:**
+1. Push projekt na GitHub
+2. Na Render Dashboard kliknite **New +** → **Blueprint**
+3. Povežite GitHub repo
+4. Render bo avtomatsko zaznal `render.yaml` in deployal PostgreSQL + Next.js
+5. Dodajte environment variables v Render Dashboard
+6. Počakajte 5-10 minut
+7. Aplikacija bo dostopna na `https://mdv-radenci.onrender.com`
 
-- Railway
-- Render
-- DigitalOcean App Platform
+**Free Tier:**
+- PostgreSQL: 256 MB prostora
+- Web Service: Spindown po 15 min neaktivnosti
+- **Skupaj: BREZPLAČNO** ✅
+
+### Druge možnosti
+
+- **Vercel** - Odlično za Next.js, potrebujete zunanjo bazo
+- **Railway** - Podobno kot Render
+- **DigitalOcean App Platform** - Za večji promet
 
 ## 🎨 Prilagajanje
 
