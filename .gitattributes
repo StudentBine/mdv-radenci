@@ -1,0 +1,23 @@
+# Prepreči slučajno commitanje občutljivih datotek
+.env filter=git-crypt diff=git-crypt
+.env.local filter=git-crypt diff=git-crypt
+.env.*.local filter=git-crypt diff=git-crypt
+
+# Tekstovne datoteke
+*.md text
+*.txt text
+*.json text
+*.yml text
+*.yaml text
+
+# Izvorna koda
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.css text
+*.scss text
+
+# Konfiguracijske datoteke
+*.config.js text
+*.config.ts text
