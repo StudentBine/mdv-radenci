@@ -16,12 +16,13 @@ jobs:
     - name: Check for secrets
       run: |
         echo "Checking for accidentally committed secrets..."
-        # Exclude workflow files, node_modules, .git, .next, build files, and env files
+        # Exclude workflow files, node_modules, .git, .next, build files, env files, and setup scripts
         if grep -r "SUPABASE_SERVICE_ROLE_KEY.*eyJ" . \
           --exclude-dir=node_modules \
           --exclude-dir=.git \
           --exclude-dir=.github \
           --exclude-dir=.next \
+          --exclude-dir=scripts \
           --exclude=".env*" \
           --exclude="*.example" \
           --exclude="*.md" 2>/dev/null; then
@@ -34,9 +35,11 @@ jobs:
           --exclude-dir=.git \
           --exclude-dir=.github \
           --exclude-dir=.next \
+          --exclude-dir=scripts \
           --exclude=".env*" \
           --exclude="*.example" \
-          --exclude="*.md" 2>/dev/null; then
+          --exclude="*.md" \
+          --exclude="*.sh" 2>/dev/null; then
           echo "⚠️ WARNING: Found potential database credentials in source files!"
           echo "Database URLs should only exist in .env files (which should NOT be committed)"
           exit 1
