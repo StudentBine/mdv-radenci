@@ -1,11 +1,12 @@
-services:
+databases:
   # PostgreSQL Database
-  - type: pserv
-    name: mdv-radenci-db
+  - name: mdv-radenci-db
     plan: free
     region: frankfurt
+    databaseName: mdv_radenci
+    user: mdv_user
 
-  # Next.js Web Service
+services:
   - type: web
     name: mdv-radenci
     env: node
