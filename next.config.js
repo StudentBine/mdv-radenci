@@ -8,7 +8,8 @@ const nextConfig = {
             },
         ],
     },
-    webpack: (config) => {
+    // Webpack configuration for module resolution
+    webpack: (config, { isServer }) => {
         config.resolve.extensions = ['.tsx', '.ts', '.jsx', '.js', '.json'];
         return config;
     },
