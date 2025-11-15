@@ -200,10 +200,7 @@ Dodajte slike v `public/` mapo in posodobite komponente.
 - ✅ Galerija z albumi
 - ✅ Dogodki s koledarjem
 - ✅ Kontaktni obrazec
-- ⬜ Newsletter
-- ⬜ Članstvo
-- ⬜ Forum/Komentar
-- ⬜ Več jezikov (EN, DE)
+
 
 ## 🔒 Varnost
 
@@ -230,7 +227,7 @@ Dodajte slike v `public/` mapo in posodobite komponente.
 
 ## 📄 Licenca
 
-© 2024 Mladinsko društvo Vrelec Radenci
+© 2025 Mladinsko društvo Vrelec Radenci
 
 ## 🤝 Prispevanje
 
@@ -238,5 +235,4 @@ Za vprašanja ali izboljšave odprite issue na GitHub repozitoriju.
 
 ---
 
-**Izdelal**: [Vaše ime]  
-**Kontakt**: info@mdv-radenci.si
+**Izdelal**: Bine Pelcl 
