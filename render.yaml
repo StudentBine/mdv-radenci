@@ -5,9 +5,8 @@ services:
     env: docker
     plan: free
     region: frankfurt
-    databases:
-      - name: mdv_radenci
-        user: mdv_user
+    databaseName: mdv_radenci
+    databaseUser: mdv_user
 
   # Next.js Web Service
   - type: web
