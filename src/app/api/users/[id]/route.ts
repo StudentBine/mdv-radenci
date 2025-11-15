@@ -68,7 +68,7 @@ export async function PUT(
     const body = await request.json();
     
     // Pripravi podatke za posodobitev
-    const updateData: any = {
+    const updateData: Record<string, string | Date> = {
       email: body.email,
       name: body.name,
       role: body.role,
@@ -94,6 +94,7 @@ export async function PUT(
     }
     
     // Ne vračaj gesla
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = updated[0];
     
     return NextResponse.json(userWithoutPassword);

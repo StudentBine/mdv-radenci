@@ -54,8 +54,9 @@ export default function NewUserPage() {
       }
 
       router.push('/admin/uporabniki');
-    } catch (err: any) {
-      setError(err.message || 'Napaka pri shranjevanju uporabnika');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || 'Napaka pri shranjevanju uporabnika');
       console.error(err);
     } finally {
       setLoading(false);

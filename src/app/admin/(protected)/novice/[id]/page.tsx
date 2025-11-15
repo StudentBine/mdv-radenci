@@ -21,28 +21,28 @@ export default function EditNewsPage() {
   });
 
   useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await fetch(`/api/news/${params.id}`);
+        if (!response.ok) throw new Error('Failed to fetch news');
+        const data = await response.json();
+        setFormData({
+          title: data.title,
+          excerpt: data.excerpt || '',
+          content: data.content,
+          imageUrl: data.imageUrl || '',
+          published: data.published,
+        });
+      } catch (err) {
+        setError('Napaka pri nalaganju novice');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchNews();
   }, [params.id]);
-
-  const fetchNews = async () => {
-    try {
-      const response = await fetch(`/api/news/${params.id}`);
-      if (!response.ok) throw new Error('Failed to fetch news');
-      const data = await response.json();
-      setFormData({
-        title: data.title,
-        excerpt: data.excerpt || '',
-        content: data.content,
-        imageUrl: data.imageUrl || '',
-        published: data.published,
-      });
-    } catch (err) {
-      setError('Napaka pri nalaganju novice');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -20,28 +20,28 @@ export default function EditUserPage() {
   });
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`/api/users/${params.id}`);
+        if (!response.ok) throw new Error('Failed to fetch user');
+        const data = await response.json();
+        setFormData({
+          name: data.name,
+          email: data.email,
+          password: '',
+          confirmPassword: '',
+          role: data.role,
+        });
+      } catch (err) {
+        setError('Napaka pri nalaganju uporabnika');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUser();
   }, [params.id]);
-
-  const fetchUser = async () => {
-    try {
-      const response = await fetch(`/api/users/${params.id}`);
-      if (!response.ok) throw new Error('Failed to fetch user');
-      const data = await response.json();
-      setFormData({
-        name: data.name,
-        email: data.email,
-        password: '',
-        confirmPassword: '',
-        role: data.role,
-      });
-    } catch (err) {
-      setError('Napaka pri nalaganju uporabnika');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +61,7 @@ export default function EditUserPage() {
     }
 
     try {
-      const updateData: any = {
+      const updateData: Record<string, string> = {
         name: formData.name,
         email: formData.email,
         role: formData.role,
@@ -86,8 +86,9 @@ export default function EditUserPage() {
       }
 
       router.push('/admin/uporabniki');
-    } catch (err: any) {
-      setError(err.message || 'Napaka pri shranjevanju uporabnika');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || 'Napaka pri shranjevanju uporabnika');
       console.error(err);
     } finally {
       setSaving(false);

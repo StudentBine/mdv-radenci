@@ -7,14 +7,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 // GET - Pridobi vse novice
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const published = searchParams.get('published');
-    
-    let query = db.select().from(news).orderBy(desc(news.createdAt));
-    
-    const allNews = await query;
+    const allNews = await db.select().from(news).orderBy(desc(news.createdAt));
     return NextResponse.json(allNews);
   } catch (error) {
     console.error('Error fetching news:', error);
