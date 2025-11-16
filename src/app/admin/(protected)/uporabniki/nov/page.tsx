@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { useLucide } from '@/hooks/useLucide';
 
 export default function NewUserPage() {
+  useLucide() // Initialize lucide icons
+  const { data: session, status } = useSession()
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,6 +19,16 @@ export default function NewUserPage() {
     confirmPassword: '',
     role: 'admin',
   });
+
+  // Check if user is admin
+  useEffect(() => {
+    if (status === 'loading') return
+    
+    const userRole = (session?.user as any)?.role
+    if (status === 'authenticated' && userRole !== 'admin') {
+      router.replace('/admin/dashboard')
+    }
+  }, [status, session, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +86,29 @@ export default function NewUserPage() {
     });
   };
 
+  // Check authorization
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  const userRole = (session?.user as any)?.role
+  if (userRole !== 'admin') {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="text-6xl mb-4">🔒</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Dostop zavrnjen</h2>
+        <p className="text-gray-600 mb-4">Nimate dovoljenja za dodajanje uporabnikov.</p>
+        <Link href="/admin/dashboard" className="btn-primary">
+          Nazaj na dashboard
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="mb-6">
@@ -80,7 +116,7 @@ export default function NewUserPage() {
           href="/admin/uporabniki"
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
         >
-          <ArrowLeft size={20} />
+          <i data-lucide="arrow-left" className="w-5 h-5"></i>
           Nazaj na uporabnike
         </Link>
         <h1 className="text-3xl font-bold">Nov uporabnik</h1>

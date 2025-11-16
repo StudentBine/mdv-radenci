@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { useLucide } from '@/hooks/useLucide';
 import { formatDate } from '@/lib/utils';
 
 interface User {
@@ -14,13 +16,29 @@ interface User {
 }
 
 export default function AdminUsersPage() {
+  useLucide() // Initialize lucide icons
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Check if user is admin
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (status === 'loading') return
+    
+    const userRole = (session?.user as any)?.role
+    if (status === 'authenticated' && userRole !== 'admin') {
+      // Redirect non-admin users
+      router.replace('/admin/dashboard')
+    }
+  }, [status, session, router])
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchUsers();
+    }
+  }, [status]);
 
   const fetchUsers = async () => {
     try {
@@ -53,6 +71,29 @@ export default function AdminUsersPage() {
     }
   };
 
+  // Check authorization
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  const userRole = (session?.user as any)?.role
+  if (userRole !== 'admin') {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="text-6xl mb-4">🔒</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Dostop zavrnjen</h2>
+        <p className="text-gray-600 mb-4">Nimate dovoljenja za ogled te strani.</p>
+        <Link href="/admin/dashboard" className="btn-primary">
+          Nazaj na dashboard
+        </Link>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -67,7 +108,7 @@ export default function AdminUsersPage() {
         <h1 className="text-3xl font-bold">Uporabniki</h1>
         <Link href="/admin/uporabniki/nov">
           <button className="btn-primary flex items-center gap-2">
-            <Plus size={20} />
+            <i data-lucide="plus" className="w-5 h-5"></i>
             Nov uporabnik
           </button>
         </Link>
@@ -131,14 +172,14 @@ export default function AdminUsersPage() {
                         className="text-primary-600 hover:text-primary-900"
                         title="Uredi"
                       >
-                        <Pencil size={18} />
+                        <i data-lucide="pencil" className="w-[18px] h-[18px]"></i>
                       </Link>
                       <button
                         onClick={() => handleDelete(user.id)}
                         className="text-red-600 hover:text-red-900"
                         title="Izbriši"
                       >
-                        <Trash2 size={18} />
+                        <i data-lucide="trash-2" className="w-[18px] h-[18px]"></i>
                       </button>
                     </div>
                   </td>

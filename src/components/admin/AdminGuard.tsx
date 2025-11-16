@@ -1,33 +1,41 @@
-'use client';
+'use client'
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
-export function AdminGuard({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+interface AdminGuardProps {
+  children: React.ReactNode
+}
+
+export default function AdminGuard({ children }: AdminGuardProps) {
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/admin/login');
+      // Use replace instead of push to avoid history issues
+      router.replace('/admin/login')
     }
-  }, [status, router]);
+  }, [status, router])
 
+  // Show loading state while checking authentication
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Nalaganje...</p>
+          <div className="w-16 h-16 border-4 border-primary-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Preverjanje dostopa...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  if (!session) {
-    return null;
+  // Don't render anything if not authenticated (will redirect)
+  if (status === 'unauthenticated') {
+    return null
   }
 
-  return <>{children}</>;
+  // User is authenticated, render children
+  return <>{children}</>
 }

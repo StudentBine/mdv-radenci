@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { useLucide } from '@/hooks/useLucide';
 
 export default function EditUserPage() {
+  useLucide() // Initialize lucide icons
+  const { data: session, status } = useSession()
   const router = useRouter();
   const params = useParams();
   const [loading, setLoading] = useState(true);
@@ -19,29 +22,41 @@ export default function EditUserPage() {
     role: 'admin',
   });
 
+  // Check if user is admin
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`/api/users/${params.id}`);
-        if (!response.ok) throw new Error('Failed to fetch user');
-        const data = await response.json();
-        setFormData({
-          name: data.name,
-          email: data.email,
-          password: '',
-          confirmPassword: '',
-          role: data.role,
-        });
-      } catch (err) {
-        setError('Napaka pri nalaganju uporabnika');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (status === 'loading') return
+    
+    const userRole = (session?.user as any)?.role
+    if (status === 'authenticated' && userRole !== 'admin') {
+      router.replace('/admin/dashboard')
+    }
+  }, [status, session, router])
 
-    fetchUser();
-  }, [params.id]);
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const fetchUser = async () => {
+        try {
+          const response = await fetch(`/api/users/${params.id}`);
+          if (!response.ok) throw new Error('Failed to fetch user');
+          const data = await response.json();
+          setFormData({
+            name: data.name,
+            email: data.email,
+            password: '',
+            confirmPassword: '',
+            role: data.role,
+          });
+        } catch (err) {
+          setError('Napaka pri nalaganju uporabnika');
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchUser();
+    }
+  }, [params.id, status]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +135,7 @@ export default function EditUserPage() {
           href="/admin/uporabniki"
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
         >
-          <ArrowLeft size={20} />
+          <i data-lucide="arrow-left" className="w-5 h-5"></i>
           Nazaj na uporabnike
         </Link>
         <h1 className="text-3xl font-bold">Uredi uporabnika</h1>

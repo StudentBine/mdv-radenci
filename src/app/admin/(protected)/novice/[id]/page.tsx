@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
-import { ImageUpload } from '@/components/admin/ImageUpload';
+import { useLucide } from '@/hooks/useLucide';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function EditNewsPage() {
+  useLucide() // Initialize lucide icons
   const router = useRouter();
   const params = useParams();
   const [loading, setLoading] = useState(true);
@@ -96,7 +97,7 @@ export default function EditNewsPage() {
           href="/admin/novice"
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
         >
-          <ArrowLeft size={20} />
+          <i data-lucide="arrow-left" className="w-5 h-5"></i>
           Nazaj na novice
         </Link>
         <h1 className="text-3xl font-bold">Uredi novico</h1>
@@ -157,8 +158,12 @@ export default function EditNewsPage() {
           </div>
 
           <ImageUpload
-            value={formData.imageUrl}
-            onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+            currentImage={formData.imageUrl}
+            onImageChange={(file) => {
+              // TODO: Upload file to storage and get URL
+              // For now, just show preview
+              console.log('Image file:', file)
+            }}
             label="Naslovna slika"
           />
 

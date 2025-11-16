@@ -1,125 +1,124 @@
-'use client';
+import { db } from '@/lib/db'
+import { news, users } from '@/lib/db/schema'
+import { desc, eq } from 'drizzle-orm'
+import Link from 'next/link'
+import DeleteNewsButton from '@/components/admin/DeleteNewsButton'
+import NewsFilters from '@/components/admin/NewsFilters'
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Pencil, Trash2, Plus, Eye } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
 
-interface NewsItem {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt?: string;
-  published: boolean;
-  publishedAt?: Date;
-  createdAt: Date;
-}
+export default async function AdminNewsPage({
+  searchParams,
+}: {
+  searchParams: { search?: string; status?: string }
+}) {
+  const searchTerm = searchParams.search || ''
+  const statusFilter = searchParams.status || ''
 
-export default function AdminNewsPage() {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  // Fetch news with author information
+  let query = db
+    .select({
+      id: news.id,
+      title: news.title,
+      slug: news.slug,
+      published: news.published,
+      publishedAt: news.publishedAt,
+      createdAt: news.createdAt,
+      authorId: news.authorId,
+      authorName: users.name,
+    })
+    .from(news)
+    .leftJoin(users, eq(news.authorId, users.id))
+    .orderBy(desc(news.createdAt))
 
-  useEffect(() => {
-    fetchNews();
-  }, []);
+  const allNews = await query
 
-  const fetchNews = async () => {
-    try {
-      const response = await fetch('/api/news');
-      if (!response.ok) throw new Error('Failed to fetch news');
-      const data = await response.json();
-      setNews(data);
-    } catch (err) {
-      setError('Napaka pri nalaganju novic');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Filter by search term
+  let filteredNews = allNews
+  if (searchTerm) {
+    filteredNews = allNews.filter(
+      (item) =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.authorName && item.authorName.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+  }
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Ali ste prepričani, da želite izbrisati to novico?')) return;
-
-    try {
-      const response = await fetch(`/api/news/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) throw new Error('Failed to delete news');
-
-      setNews(news.filter((item) => item.id !== id));
-    } catch (err) {
-      alert('Napaka pri brisanju novice');
-      console.error(err);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    );
+  // Filter by status
+  if (statusFilter === 'published') {
+    filteredNews = filteredNews.filter((item) => item.published)
+  } else if (statusFilter === 'draft') {
+    filteredNews = filteredNews.filter((item) => !item.published)
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Novice</h1>
-        <Link href="/admin/novice/nova">
-          <button className="btn-primary flex items-center gap-2">
-            <Plus size={20} />
-            Nova novica
-          </button>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-heading font-bold text-gray-900">
+            Upravljanje novic
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Ustvarjajte, urejajte in upravljajte novice na spletni strani
+          </p>
+        </div>
+        <Link
+          href="/admin/novice/nova"
+          className="btn-primary flex items-center space-x-2"
+        >
+          <span>+</span>
+          <span>Nova novica</span>
         </Link>
       </div>
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
+      {/* Search and Filters */}
+      <NewsFilters searchTerm={searchTerm} statusFilter={statusFilter} />
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Naslov
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Datum objave
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Akcije
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {news.length === 0 ? (
+      {/* News Table */}
+      <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                  Še ni dodanih novic. Dodajte prvo novico!
-                </td>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Naslov
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Avtor
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Datum
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Akcije
+                </th>
               </tr>
-            ) : (
-              news.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredNews.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-200">
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                    {item.excerpt && (
-                      <div className="text-sm text-gray-500 truncate max-w-md">
-                        {item.excerpt}
-                      </div>
-                    )}
+                    <div className="text-sm font-medium text-gray-900">
+                      {item.title}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{item.authorName || 'Neznano'}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {item.publishedAt
+                        ? new Date(item.publishedAt).toLocaleDateString('sl-SI')
+                        : new Date(item.createdAt).toLocaleDateString('sl-SI')}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         item.published
                           ? 'bg-green-100 text-green-800'
                           : 'bg-yellow-100 text-yellow-800'
@@ -128,41 +127,49 @@ export default function AdminNewsPage() {
                       {item.published ? 'Objavljeno' : 'Osnutek'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.publishedAt ? formatDate(item.publishedAt) : '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end gap-2">
-                      <Link
-                        href={`/novice/${item.slug}`}
-                        target="_blank"
-                        className="text-blue-600 hover:text-blue-900"
-                        title="Predogled"
-                      >
-                        <Eye size={18} />
-                      </Link>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
                       <Link
                         href={`/admin/novice/${item.id}`}
-                        className="text-primary-600 hover:text-primary-900"
-                        title="Uredi"
+                        className="text-primary-green hover:text-green-600 transition-colors duration-200"
                       >
-                        <Pencil size={18} />
+                        Uredi
                       </Link>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Izbriši"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <DeleteNewsButton newsId={item.id} newsTitle={item.title} />
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Empty State */}
+        {filteredNews.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 text-6xl mb-4">📰</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Ni novic
+            </h3>
+            <p className="text-gray-500 mb-4">
+              {searchTerm ? 'Ni novic, ki ustrezajo iskanju.' : 'Še nimate nobenih novic.'}
+            </p>
+            <Link
+              href="/admin/novice/nova"
+              className="btn-primary"
+            >
+              Ustvari prvo novico
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Stats */}
+      <div className="flex justify-between items-center text-sm text-gray-700">
+        <div>
+          Skupaj <span className="font-medium">{filteredNews.length}</span> {filteredNews.length === 1 ? 'novica' : filteredNews.length === 2 ? 'novici' : filteredNews.length === 3 || filteredNews.length === 4 ? 'novice' : 'novic'}
+        </div>
       </div>
     </div>
-  );
+  )
 }
