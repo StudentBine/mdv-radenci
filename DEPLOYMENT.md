@@ -1,52 +1,101 @@
-# Navodila za deployment
+# Deployment Guide# Navodila za deployment
 
-## Supabase nastavitve
 
-### 1. Ustvari Supabase projekt
 
-1. Pojdi na [supabase.com](https://supabase.com)
-2. Ustvari nov projekt
-3. Kopiraj URL in anon key
+This project is optimized for deployment on **Vercel**. For detailed instructions, see [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md).## Supabase nastavitve
+
+
+
+## Quick Deploy to Vercel### 1. Ustvari Supabase projekt
+
+
+
+1. Push your code to GitHub1. Pojdi na [supabase.com](https://supabase.com)
+
+2. Go to [vercel.com](https://vercel.com) and import your repository2. Ustvari nov projekt
+
+3. Add environment variables (see below)3. Kopiraj URL in anon key
+
+4. Deploy!
 
 ### 2. Ustvari Storage Bucket
 
-```sql
--- V Supabase SQL Editor
--- Ustvari bucket za slike
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('images', 'images', true);
+## Required Environment Variables
 
--- Omogoči javni dostop
-CREATE POLICY "Public Access"
-ON storage.objects FOR SELECT
+```sql
+
+```bash-- V Supabase SQL Editor
+
+DATABASE_URL=postgresql://...-- Ustvari bucket za slike
+
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.coINSERT INTO storage.buckets (id, name, public)
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-keyVALUES ('images', 'images', true);
+
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+NEXTAUTH_URL=https://your-domain.vercel.app-- Omogoči javni dostop
+
+NEXTAUTH_SECRET=your-secret-keyCREATE POLICY "Public Access"
+
+```ON storage.objects FOR SELECT
+
 USING (bucket_id = 'images');
 
--- Omogoči upload za avtenticirane uporabnike
-CREATE POLICY "Authenticated Upload"
-ON storage.objects FOR INSERT
+Generate `NEXTAUTH_SECRET`:
+
+```bash-- Omogoči upload za avtenticirane uporabnike
+
+openssl rand -base64 32CREATE POLICY "Authenticated Upload"
+
+```ON storage.objects FOR INSERT
+
 WITH CHECK (bucket_id = 'images' AND auth.role() = 'authenticated');
+
+## Database Setup```
+
+
+
+This project uses PostgreSQL with Supabase. See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for detailed setup instructions.## PostgreSQL nastavitve
+
+
+
+## First Admin User### 1. Lokalno (Development)
+
+
+
+```bash```bash
+
+# Generate password hash# Ustvari bazo
+
+node -e "console.log(require('bcrypt').hashSync('your-password', 10))"createdb mdv_radenci
+
+
+
+# Add to database# Poveži se
+
+psql $DATABASE_URL -c "INSERT INTO users (email, password, name, role) VALUES ('admin@mdv-radenci.si', '\$HASHED_PASSWORD', 'Admin', 'admin');"psql mdv_radenci
+
 ```
-
-## PostgreSQL nastavitve
-
-### 1. Lokalno (Development)
-
-```bash
-# Ustvari bazo
-createdb mdv_radenci
-
-# Poveži se
-psql mdv_radenci
 
 # Ali uporabi Docker
-docker run --name mdv-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=mdv_radenci -p 5432:5432 -d postgres:15
+
+## Post-Deploymentdocker run --name mdv-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=mdv_radenci -p 5432:5432 -d postgres:15
+
 ```
 
-### 2. Production (Railway/Supabase/Render)
+1. Verify site is live
 
-Uporabite ponudnika PostgreSQL in kopirajte connection string v `.env`
+2. Login at `/admin/login`### 2. Production (Railway/Supabase/Render)
 
-## Namestitev na Vercel
+3. Test image uploads
+
+4. Configure custom domain (optional)Uporabite ponudnika PostgreSQL in kopirajte connection string v `.env`
+
+
+
+For complete deployment instructions, see [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md).## Namestitev na Vercel
+
 
 ### 1. Poveži GitHub repo
 

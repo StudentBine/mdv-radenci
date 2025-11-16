@@ -165,29 +165,45 @@ POST   /api/upload        - Naloži sliko
 
 ## 🚀 Production Deploy
 
-### Render.com (Priporočeno - BREZPLAČNO)
+### Vercel (Priporočeno)
 
-Za podrobna navodila glejte **[RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md)**
+Za podrobna navodila glejte **[VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)**
 
 **Hitri koraki:**
 1. Push projekt na GitHub
-2. Na Render Dashboard kliknite **New +** → **Blueprint**
-3. Povežite GitHub repo
-4. Render bo avtomatsko zaznal `render.yaml` in deployal PostgreSQL + Next.js
-5. Dodajte environment variables v Render Dashboard
-6. Počakajte 5-10 minut
-7. Aplikacija bo dostopna na `https://mdv-radenci.onrender.com`
+2. Pojdite na [vercel.com](https://vercel.com) in se prijavite
+3. Kliknite "Import Project" in izberite svoj GitHub repo
+4. Vercel bo avtomatsko zaznal Next.js konfiguracijo
+5. Dodajte environment variables (DATABASE_URL, SUPABASE keys, NEXTAUTH_SECRET, itd.)
+6. Kliknite "Deploy"
+7. Aplikacija bo dostopna na `https://your-project.vercel.app`
 
-**Free Tier:**
-- PostgreSQL: 256 MB prostora
-- Web Service: Spindown po 15 min neaktivnosti
-- **Skupaj: BREZPLAČNO** ✅
+**Prednosti Vercel:**
+- ✅ Optimizirano za Next.js
+- ✅ Avtomatski deployments ob push na GitHub
+- ✅ Preview deployments za vsak branch
+- ✅ SSL certifikati vključeni
+- ✅ Edge Network za hitro delovanje po celem svetu
+- ✅ Free tier z velikodušnimi limiti
+
+**Free Tier vključuje:**
+- 100 GB bandwidth
+- Unlimited websites
+- Automatic HTTPS
+- Preview deployments
+
+### Database
+
+Za produkcijsko bazo uporabite **Supabase** (brezplačno do 500 MB):
+1. Ustvarite projekt na [supabase.com](https://supabase.com)
+2. Kopirajte DATABASE_URL connection string
+3. Dodajte ga v Vercel environment variables
 
 ### Druge možnosti
 
-- **Vercel** - Odlično za Next.js, potrebujete zunanjo bazo
-- **Railway** - Podobno kot Render
+- **Railway** - All-in-one platform
 - **DigitalOcean App Platform** - Za večji promet
+- **Netlify** - Alternativa Vercel
 
 ## 🎨 Prilagajanje
 
@@ -222,20 +238,18 @@ Dodajte slike v `public/` mapo in posodobite komponente.
 - Supabase RLS policies
 - Environment variables za občutljive podatke
 
-**⚠️ POMEMBNO**: Preden pushate na GitHub, preberite:
-- 📖 `SECURITY.md` - Varnostna navodila
-- ✅ `PRE_COMMIT_CHECKLIST.md` - Checklist pred commit-om
-- 🚀 `GITHUB_SETUP.md` - Navodila za GitHub setup
+**⚠️ POMEMBNO**: Preden pushate na GitHub:
+- Preverite da je `.env` v `.gitignore`
+- Uporabite močna gesla
+- Preglejte `SECURITY.md` za varnostna priporočila
 
 ## 📖 Dokumentacija
 
 - `README.md` - Glavna dokumentacija (ta datoteka)
-- `DEPLOYMENT.md` - Navodila za deploy na produkcijo
+- `DEPLOYMENT.md` - Hiter pregled deployment procesa
+- `VERCEL_DEPLOYMENT.md` - Podrobna navodila za Vercel deployment
 - `SECURITY.md` - Varnostna navodila in best practices
 - `SUPABASE_SETUP.md` - Supabase Storage nastavitev
-- `SUPABASE_FIX.sql` - SQL za popravilo RLS policies
-- `PRE_COMMIT_CHECKLIST.md` - Checklist pred Git commit-om
-- `GITHUB_SETUP.md` - GitHub repozitorij setup
 
 ## 📄 Licenca
 
