@@ -3,6 +3,9 @@ import { news } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { NewsCard } from '@/components/news/NewsCard';
 
+// Force dynamic rendering - this page fetches data from database
+export const dynamic = 'force-dynamic';
+
 export default async function NewsListPage() {
   const allNews = await db.select()
     .from(news)
