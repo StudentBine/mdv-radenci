@@ -27,7 +27,7 @@ export default function AdminUsersPage() {
   useEffect(() => {
     if (status === 'loading') return
     
-    const userRole = (session?.user as any)?.role
+    const userRole = (session?.user as { role?: string })?.role
     if (status === 'authenticated' && userRole !== 'admin') {
       // Redirect non-admin users
       router.replace('/admin/dashboard')
@@ -80,7 +80,7 @@ export default function AdminUsersPage() {
     );
   }
 
-  const userRole = (session?.user as any)?.role
+  const userRole = (session?.user as { role?: string })?.role
   if (userRole !== 'admin') {
     return (
       <div className="flex flex-col items-center justify-center h-64">

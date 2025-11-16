@@ -70,11 +70,12 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         const session = await getSession()
         
         if (session?.user) {
+          const sessionUser = session.user as { id?: string; email?: string; name?: string; role?: string }
           const userData: User = {
-            id: (session.user as any).id || '1',
-            email: session.user.email || email,
-            name: session.user.name || 'User',
-            role: (session.user as any).role || 'admin'
+            id: sessionUser.id || '1',
+            email: sessionUser.email || email,
+            name: sessionUser.name || 'User',
+            role: (sessionUser.role === 'user' ? 'user' : 'admin')
           }
           
           setUser(userData)

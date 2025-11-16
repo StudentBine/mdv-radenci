@@ -42,7 +42,7 @@ export function validateStringLength(
 }
 
 // CORS headers for production
-export function getCorsHeaders(origin?: string) {
+export function getCorsHeaders(origin?: string): Record<string, string> {
   const allowedOrigins = [
     process.env.NEXT_PUBLIC_APP_URL,
     'https://mdv-radenci.vercel.app',
@@ -63,7 +63,7 @@ export function getCorsHeaders(origin?: string) {
 export function errorResponse(
   message: string,
   status: number = 400,
-  additionalData?: Record<string, any>
+  additionalData?: Record<string, unknown>
 ) {
   return NextResponse.json(
     {
@@ -76,24 +76,24 @@ export function errorResponse(
 
 // Success response helper
 export function successResponse(
-  data: any,
+  data: unknown,
   status: number = 200
 ) {
   return NextResponse.json(data, { status })
 }
 
 // Check if request is from authenticated admin
-export async function isAdmin(request: Request): Promise<boolean> {
+export async function isAdmin(): Promise<boolean> {
   try {
     const session = await getServerSession()
-    return (session?.user as any)?.role === 'admin'
+    return (session?.user as { role?: string })?.role === 'admin'
   } catch {
     return false
   }
 }
 
 // Dummy getServerSession for now - you'll need to implement this properly
-async function getServerSession(): Promise<any> {
+async function getServerSession(): Promise<{ user?: unknown } | null> {
   // This should use NextAuth's getServerSession
   return null
 }

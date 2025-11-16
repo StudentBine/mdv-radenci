@@ -17,7 +17,7 @@ export default async function AdminNewsPage({
   const statusFilter = searchParams.status || ''
 
   // Fetch news with author information
-  let query = db
+  const query = db
     .select({
       id: news.id,
       title: news.title,

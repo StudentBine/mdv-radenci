@@ -38,7 +38,11 @@ export default function ImageUpload({
     event.preventDefault()
     const file = event.dataTransfer.files[0]
     if (file && file.type.startsWith('image/')) {
-      handleFileChange({ target: { files: [file] } } as any)
+      // Create a synthetic event for file input
+      const syntheticEvent = {
+        target: { files: [file] }
+      } as unknown as React.ChangeEvent<HTMLInputElement>
+      handleFileChange(syntheticEvent)
     }
   }
 

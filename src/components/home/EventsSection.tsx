@@ -2,7 +2,7 @@ import Link from 'next/link'
 import EventCard from '@/components/events/EventCard'
 import { db } from '@/lib/db'
 import { events } from '@/lib/db/schema'
-import { eq, gte } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 export default async function EventsSection() {
   // Fetch upcoming events from database

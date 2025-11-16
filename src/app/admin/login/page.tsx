@@ -9,11 +9,11 @@ import Link from 'next/link'
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [errorMsg, setErrorMsg] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   
   const { login } = useAuth()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
 
   // Redirect if already logged in
@@ -25,7 +25,7 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    setErrorMsg('')
     setIsLoading(true)
 
     try {
@@ -34,11 +34,11 @@ export default function AdminLogin() {
         // Manually redirect after successful login
         router.push('/admin/dashboard')
       } else {
-        setError('Napačen email ali geslo')
+        setErrorMsg('Napačen email ali geslo')
         setIsLoading(false)
       }
-    } catch (error) {
-      setError('Prišlo je do napake pri prijavi')
+    } catch {
+      setErrorMsg('Prišlo je do napake pri prijavi')
       setIsLoading(false)
     }
   }
@@ -58,9 +58,9 @@ export default function AdminLogin() {
 
         {/* Login Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
+          {errorMsg && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-              {error}
+              {errorMsg}
             </div>
           )}
 

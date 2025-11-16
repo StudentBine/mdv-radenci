@@ -26,7 +26,7 @@ export default function EditUserPage() {
   useEffect(() => {
     if (status === 'loading') return
     
-    const userRole = (session?.user as any)?.role
+    const userRole = (session?.user as { role?: string })?.role
     if (status === 'authenticated' && userRole !== 'admin') {
       router.replace('/admin/dashboard')
     }

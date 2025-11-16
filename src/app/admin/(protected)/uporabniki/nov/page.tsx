@@ -24,7 +24,7 @@ export default function NewUserPage() {
   useEffect(() => {
     if (status === 'loading') return
     
-    const userRole = (session?.user as any)?.role
+    const userRole = (session?.user as { role?: string })?.role
     if (status === 'authenticated' && userRole !== 'admin') {
       router.replace('/admin/dashboard')
     }
@@ -95,7 +95,7 @@ export default function NewUserPage() {
     );
   }
 
-  const userRole = (session?.user as any)?.role
+  const userRole = (session?.user as { role?: string })?.role
   if (userRole !== 'admin') {
     return (
       <div className="flex flex-col items-center justify-center h-64">

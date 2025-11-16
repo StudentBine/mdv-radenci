@@ -29,7 +29,7 @@ export default function AdminSidebar() {
   const user = session?.user
   const userName = user?.name || 'Admin'
   const userEmail = user?.email || 'admin@mdv-radenci.si'
-  const userRole = (user as any)?.role || 'editor'
+  const userRole = (user as { role?: string })?.role || 'editor'
   const userInitial = userName.charAt(0).toUpperCase()
   const isAdmin = userRole === 'admin'
 
