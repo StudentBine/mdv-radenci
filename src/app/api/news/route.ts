@@ -5,6 +5,7 @@ import { desc } from 'drizzle-orm';
 import { slugify } from '@/lib/utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 // GET - Pridobi vse novice
 export async function GET() {
@@ -48,6 +49,12 @@ export async function POST(request: NextRequest) {
       ...body,
       authorId: 1, // TODO: use actual user ID from session
     }).returning();
+    
+    // Revalidate cache for home and news pages when new article is published
+    if (body.published) {
+      revalidatePath('/');
+      revalidatePath('/novice');
+    }
     
     return NextResponse.json(newArticle[0]);
   } catch (error) {

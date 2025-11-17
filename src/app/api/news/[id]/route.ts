@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { slugify } from '@/lib/utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 // GET - Pridobi posamezno novico
 export async function GET(
@@ -72,6 +73,11 @@ export async function PUT(
         { status: 404 }
       );
     }
+
+    // Revalidate cache for updated pages
+    revalidatePath('/');
+    revalidatePath('/novice');
+    revalidatePath(`/novice/${updated[0].slug}`);
     
     return NextResponse.json(updated[0]);
   } catch (error) {
@@ -99,6 +105,11 @@ export async function DELETE(
     }
 
     await db.delete(news).where(eq(news.id, parseInt(params.id)));
+    
+    // Revalidate cache for home and news pages
+    revalidatePath('/');
+    revalidatePath('/novice');
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting news:', error);
