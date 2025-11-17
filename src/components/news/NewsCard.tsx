@@ -21,16 +21,16 @@ export default function NewsCard({ news, className = '', style }: NewsCardProps)
     <article className={`card overflow-hidden group hover:translate-y-[-4px] transition-all duration-300 ${className}`} style={style}>
       <Link href={`/novice/${news.slug}`}>
         {/* Image */}
-        <div className="relative h-48 bg-gray-200 overflow-hidden">
+        <div className="relative h-48 bg-gray-50 overflow-hidden flex items-center justify-center p-2">
           <div className="absolute inset-0 bg-primary-green opacity-0 group-hover:opacity-20 transition-opacity duration-300 z-10"></div>
           {news.imageUrl ? (
             <img 
               src={news.imageUrl} 
               alt={news.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary-green to-primary-yellow flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-br from-primary-green to-primary-yellow flex items-center justify-center rounded-lg">
               <span className="text-primary-white font-heading font-bold text-lg">MDV</span>
             </div>
           )}

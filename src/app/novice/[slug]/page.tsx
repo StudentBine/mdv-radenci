@@ -113,15 +113,17 @@ export default async function NewsDetailPage({ params }: NewsPageProps) {
           </header>
 
           {/* Featured Image */}
-          <div className="mb-12 rounded-2xl overflow-hidden shadow-xl animate-slide-up">
+          <div className="mb-12 animate-slide-up">
             {newsItem.imageUrl ? (
-              <img
-                src={newsItem.imageUrl}
-                alt={newsItem.title}
-                className="w-full h-64 md:h-96 object-cover"
-              />
+              <div className="flex justify-center bg-gray-50 rounded-2xl p-4 shadow-xl">
+                <img
+                  src={newsItem.imageUrl}
+                  alt={newsItem.title}
+                  className="max-w-full max-h-80 md:max-h-96 w-auto h-auto rounded-xl object-contain"
+                />
+              </div>
             ) : (
-              <div className="w-full h-64 md:h-96 bg-gradient-to-br from-primary-green to-primary-yellow flex items-center justify-center">
+              <div className="w-full h-64 md:h-96 bg-gradient-to-br from-primary-green to-primary-yellow flex items-center justify-center rounded-2xl shadow-xl">
                 <span className="text-primary-white font-heading font-bold text-2xl">MDV - {newsItem.title}</span>
               </div>
             )}

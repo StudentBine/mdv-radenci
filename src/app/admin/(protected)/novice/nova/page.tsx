@@ -18,6 +18,26 @@ export default function NewNewsPage() {
     imageUrl: '',
     published: false,
   });
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const uploadImage = async (file: File): Promise<string> => {
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formDataUpload,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Napaka pri nalaganju slike');
+    }
+
+    const data = await response.json();
+    return data.url;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,12 +45,29 @@ export default function NewNewsPage() {
     setError('');
 
     try {
+      let imageUrl = formData.imageUrl;
+      
+      // Upload image if selected
+      if (selectedFile) {
+        setUploading(true);
+        try {
+          imageUrl = await uploadImage(selectedFile);
+        } catch (uploadError) {
+          throw new Error(`Napaka pri nalaganju slike: ${uploadError instanceof Error ? uploadError.message : 'Neznana napaka'}`);
+        } finally {
+          setUploading(false);
+        }
+      }
+
       const response = await fetch('/api/news', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          imageUrl
+        }),
       });
 
       if (!response.ok) {
@@ -39,7 +76,7 @@ export default function NewNewsPage() {
 
       router.push('/admin/novice');
     } catch (err) {
-      setError('Napaka pri shranjevanju novice');
+      setError(err instanceof Error ? err.message : 'Napaka pri shranjevanju novice');
       console.error(err);
     } finally {
       setLoading(false);
@@ -126,12 +163,15 @@ export default function NewNewsPage() {
           <ImageUpload
             currentImage={formData.imageUrl}
             onImageChange={(file) => {
-              // TODO: Upload file to storage and get URL
-              // For now, just show preview
-              console.log('Image file:', file)
+              setSelectedFile(file);
             }}
             label="Naslovna slika"
           />
+          {uploading && (
+            <div className="text-sm text-blue-600">
+              Nalaganje slike...
+            </div>
+          )}
 
           <div className="flex items-center">
             <input
@@ -151,10 +191,10 @@ export default function NewNewsPage() {
         <div className="mt-6 flex gap-4">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploading}
             className="btn-primary disabled:opacity-50"
           >
-            {loading ? 'Shranjevanje...' : 'Shrani novico'}
+            {uploading ? 'Nalaganje slike...' : loading ? 'Shranjevanje...' : 'Shrani novico'}
           </button>
           <Link href="/admin/novice">
             <button type="button" className="btn-secondary">
