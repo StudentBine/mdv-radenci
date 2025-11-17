@@ -4,6 +4,7 @@ import { desc, eq } from 'drizzle-orm'
 import Link from 'next/link'
 import DeleteNewsButton from '@/components/admin/DeleteNewsButton'
 import NewsFilters from '@/components/admin/NewsFilters'
+import PublishToggle from '@/components/admin/PublishToggle'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -117,15 +118,11 @@ export default async function AdminNewsPage({
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        item.published
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                    >
-                      {item.published ? 'Objavljeno' : 'Osnutek'}
-                    </span>
+                    <PublishToggle
+                      newsId={item.id}
+                      isPublished={item.published}
+                      newsTitle={item.title}
+                    />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">

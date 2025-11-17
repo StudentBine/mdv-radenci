@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useLucide } from '@/hooks/useLucide';
+import { useToast } from '@/contexts/ToastContext';
 import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function NewNewsPage() {
   useLucide() // Initialize lucide icons
   const router = useRouter();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
@@ -74,9 +76,15 @@ export default function NewNewsPage() {
         throw new Error('Failed to create news');
       }
 
+      addToast(
+        `Novica "${formData.title}" je bila uspešno ${formData.published ? 'objavljena' : 'shranjena'}!`,
+        'success'
+      );
       router.push('/admin/novice');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Napaka pri shranjevanju novice');
+      const errorMessage = err instanceof Error ? err.message : 'Napaka pri shranjevanju novice';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error(err);
     } finally {
       setLoading(false);

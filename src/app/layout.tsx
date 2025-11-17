@@ -5,6 +5,8 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AuthProvider from '@/components/providers/AuthProvider'
 import SessionProvider from '@/components/providers/SessionProvider'
+import { ToastProvider } from '@/contexts/ToastContext'
+import ToastContainer from '@/components/ui/ToastContainer'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -34,13 +36,16 @@ export default function RootLayout({
       <body>
         <SessionProvider>
           <AuthProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </div>
+            <ToastProvider>
+              <div className="min-h-screen flex flex-col">
+                <Header />
+                <main className="flex-grow">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+              <ToastContainer />
+            </ToastProvider>
           </AuthProvider>
         </SessionProvider>
       </body>

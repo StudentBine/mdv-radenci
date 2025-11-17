@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLucide } from '@/hooks/useLucide';
+import { useToast } from '@/contexts/ToastContext';
 import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function EditNewsPage() {
   useLucide() // Initialize lucide icons
   const router = useRouter();
   const params = useParams();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -100,9 +102,15 @@ export default function EditNewsPage() {
         throw new Error('Failed to update news');
       }
 
+      addToast(
+        `Novica "${formData.title}" je bila uspešno posodobljena!`,
+        'success'
+      );
       router.push('/admin/novice');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Napaka pri shranjevanju novice');
+      const errorMessage = err instanceof Error ? err.message : 'Napaka pri shranjevanju novice';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error(err);
     } finally {
       setSaving(false);

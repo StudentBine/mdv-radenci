@@ -1,11 +1,16 @@
 'use client'
 
+import { useToast } from '@/contexts/ToastContext'
+import { useRouter } from 'next/navigation'
+
 interface DeleteNewsButtonProps {
   newsId: number
   newsTitle: string
 }
 
 export default function DeleteNewsButton({ newsId, newsTitle }: DeleteNewsButtonProps) {
+  const { addToast } = useToast()
+  const router = useRouter()
   const handleDelete = async () => {
     if (!confirm(`Ali ste prepričani, da želite izbrisati novico "${newsTitle}"?`)) {
       return
@@ -20,10 +25,10 @@ export default function DeleteNewsButton({ newsId, newsTitle }: DeleteNewsButton
         throw new Error('Napaka pri brisanju')
       }
 
-      // Refresh the page to show updated list
-      window.location.reload()
+      addToast(`Novica "${newsTitle}" je bila uspešno izbrisana`, 'success')
+      router.refresh()
     } catch (error) {
-      alert('Napaka pri brisanju novice. Poskusite ponovno.')
+      addToast('Napaka pri brisanju novice. Poskusite ponovno.', 'error')
       console.error('Delete error:', error)
     }
   }
