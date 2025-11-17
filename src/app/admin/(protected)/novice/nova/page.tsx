@@ -80,6 +80,8 @@ export default function NewNewsPage() {
         `Novica "${formData.title}" je bila uspešno ${formData.published ? 'objavljena' : 'shranjena'}!`,
         'success'
       );
+      // Force refresh of admin page
+      router.refresh();
       router.push('/admin/novice');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Napaka pri shranjevanju novice';

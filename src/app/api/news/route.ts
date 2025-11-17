@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { news } from '@/lib/db/schema';
-import { desc } from 'drizzle-orm';
+import { news, users } from '@/lib/db/schema';
+import { desc, eq } from 'drizzle-orm';
 import { slugify } from '@/lib/utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -26,11 +26,29 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Get user ID from session - if no ID, lookup by email
+    let userId = parseInt(session.user.id || '0');
+    
+    if (!userId && session.user.email) {
+      const user = await db.query.users.findFirst({
+        where: eq(users.email, session.user.email),
+      });
+      
+      if (user) {
+        userId = user.id;
+      }
+    }
+    
+    // Fallback to admin if still no user found
+    if (!userId) {
+      userId = 1;
     }
 
     const body = await request.json();
@@ -47,10 +65,11 @@ export async function POST(request: NextRequest) {
     
     const newArticle = await db.insert(news).values({
       ...body,
-      authorId: 1, // TODO: use actual user ID from session
+      authorId: userId,
     }).returning();
     
-    // Revalidate cache for home and news pages when new article is published
+    // Revalidate cache for all relevant pages
+    revalidatePath('/admin/novice');
     if (body.published) {
       revalidatePath('/');
       revalidatePath('/novice');

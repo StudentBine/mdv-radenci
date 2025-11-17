@@ -134,26 +134,6 @@ export default async function NewsDetailPage({ params }: NewsPageProps) {
             className="prose prose-lg max-w-none prose-headings:font-heading prose-headings:text-gray-900 prose-p:text-gray-700 prose-li:text-gray-700 prose-strong:text-gray-900 prose-a:text-primary-green prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-img:shadow-md animate-fade-in"
             dangerouslySetInnerHTML={{ __html: newsItem.content }}
           />
-
-          {/* Share */}
-          <div className="mt-12 pt-8 border-t border-gray-200 animate-fade-in">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div>
-                <p className="text-gray-600 font-medium">Delite to novico:</p>
-              </div>
-              <div className="flex space-x-4">
-                <button className="w-10 h-10 bg-blue-600 text-primary-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors duration-200">
-                  <span className="text-sm font-medium">f</span>
-                </button>
-                <button className="w-10 h-10 bg-blue-400 text-primary-white rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors duration-200">
-                  <span className="text-sm font-medium">t</span>
-                </button>
-                <button className="w-10 h-10 bg-green-500 text-primary-white rounded-full flex items-center justify-center hover:bg-green-600 transition-colors duration-200">
-                  <span className="text-sm font-medium">in</span>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </article>
     </div>

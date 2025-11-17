@@ -106,6 +106,8 @@ export default function EditNewsPage() {
         `Novica "${formData.title}" je bila uspešno posodobljena!`,
         'success'
       );
+      // Force refresh of admin page
+      router.refresh();
       router.push('/admin/novice');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Napaka pri shranjevanju novice';
